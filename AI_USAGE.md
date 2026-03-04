@@ -1,43 +1,40 @@
-# AI Usage Log (Candidate — fill this out)
+Models and tools used
+Model / tool	Purpose (e.g. code gen, prompts, analysis)
+ChatGPT (GPT-5 / GPT-4 style assistant)	Guidance on system design, code structuring, and documentation for the compliance checker and situation classifier
+VS Code + Git	Code development, refactoring, and running the assessment scripts
+Workflows / skills
 
-Use this template to report how you used AI for the assessment. Keep cost minimal; we care about reasoning and design.
+Used ChatGPT to brainstorm the architecture for the compliance checking pipeline and situation classification.
 
----
+Used AI assistance to refactor the provided run_assessment.py into modular components (compliance_checker.py and situation_classifier.py).
 
-## Models and tools used
+Reviewed and adjusted the generated suggestions manually to ensure the implementation works with the provided dataset and repository structure.
 
-| Model / tool | Purpose (e.g. code gen, prompts, analysis) |
-|--------------|--------------------------------------------|
-| _e.g. Claude 3.5 Sonnet via Cursor_ | _e.g. Draft compliance rule logic_ |
-| _e.g. GPT-4o mini_ | _e.g. Classify sample conversations_ |
-| _…_ | _…_ |
+All final code and testing were performed locally using Python and VS Code.
 
----
+Token usage and cost (approximate)
+Model	Input tokens (approx)	Output tokens (approx)	Est. cost ($)
+ChatGPT	~2000	~1200	~$0.01
+Total			~$0.01
 
-## Workflows / skills
+(Estimates are approximate and based on interactive usage during development.)
 
-- _e.g. “Used Cursor agent to generate initial compliance checker; then edited by hand.”_
-- _e.g. “Custom prompt in `prompts/compliance_check.txt` run via OpenAI API.”_
+Scaling to production — commentary
 
----
+For production deployment handling thousands of conversations per day, I would design a hybrid system that combines rule-based checks with ML/LLM components.
 
-## Token usage and cost (approximate)
+First, a lightweight rule-based engine (like the one implemented in this assessment) would perform fast keyword or regex checks to detect obvious compliance violations. This ensures low latency and minimal cost for the majority of conversations.
 
-| Model | Input tokens (approx) | Output tokens (approx) | Est. cost ($) |
-|-------|------------------------|-------------------------|---------------|
-| _e.g. Claude 3.5 Sonnet_ | _e.g. 15k_ | _e.g. 2k_ | _e.g. 0.08_ |
-| _…_ | _…_ | _…_ | _…_ |
-| **Total** | | | **_e.g. 0.12_** |
+For more ambiguous cases, an LLM-based classifier or embedding similarity search could be used as a second layer. This allows semantic understanding beyond simple keyword matching.
 
----
+To control cost and improve performance:
 
-## Scaling to production — commentary
+Implement caching for repeated or similar conversations.
 
-_Short paragraph: how would you manage cost, rate limits, caching, model choice, and reliability when this runs at scale (e.g. thousands of conversations per day)?_
+Use smaller models for simple classification tasks, reserving larger models only for complex cases.
 
-Example topics:
+Process conversations in batches asynchronously to improve throughput.
 
-- Caching (e.g. same conversation text → reuse compliance result).
-- Model choice (smaller/cheaper model for simple rules, larger only when needed).
-- Batching and async processing.
-- Guardrails and fallbacks (e.g. rule-based first, LLM only for edge cases).
+Add guardrails and fallbacks, where rule-based detection runs first and LLM calls are triggered only when needed.
+
+This hybrid approach balances accuracy, cost efficiency, and scalability for large-scale customer communication compliance systems.
